@@ -1,0 +1,619 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Exit Exam</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px;
+    }
+    .left-panel, .right-panel {
+      width: 20%;
+      padding: 15px;
+      background-color: #f0f4f8;
+      border-radius: 6px;
+      display: none;
+    }
+    .main-panel {
+      width: 60%;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    h2, h3, h4 {
+      color: #003366;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: 'Georgia', serif;
+    }
+    button {
+      background-color: #003366;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0055a5;
+    }
+    .timer {
+      text-align: right;
+      font-weight: bold;
+      color: #aa0000;
+      margin-bottom: 20px;
+    }
+    .question-box {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background-color: #fdfdfd;
+      border-radius: 6px;
+    }
+    .navigation-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .question-nav span {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      text-align: center;
+      margin: 5px;
+      border-radius: 4px;
+      border: 1px solid #aaa;
+      cursor: pointer;
+      font-weight: bold;
+      color: #003366;
+    }
+    .question-nav .answered {
+      background-color: #cce5ff;
+    }
+    .question-nav .flagged {
+      border: 2px solid red;
+    }
+    .flag-btn {
+      background-color: #ffcc00;
+      color: black;
+      font-weight: bold;
+      width: 100%;
+    }
+    .review, .summary {
+      padding-top: 10px;
+    }
+    .answer-review {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border-radius: 4px;
+      border-left: 5px solid #003366;
+    }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="left-panel" id="leftPanel">
+      <button class="flag-btn" onclick="toggleFlag()">Flag/Unflag Question</button>
+    </div>
+    <div class="main-panel">
+      <div id="login" class="login active">
+        <h2>Login</h2>
+        <select id="department">
+          <option value="">Select Department</option>
+          <option value="CSE">CSE</option>
+          <option value="Management">Management</option>
+          <option value="Accounting">Accounting</option>
+          <option value="Economics">Economics</option>
+        </select>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <select id="questionVersion">
+          <option value="">Select Question Set</option>
+          <option value="v1">Version 1</option>
+          <option value="v2">Version 2</option>
+          <option value="v3">Version 3</option>
+        </select>
+        <button onclick="login()">Login</button>
+      </div>
+      <div id="quiz" class="quiz" style="display:none;">
+        <div class="timer">Time left: <span id="time">30:00</span></div>
+        <div class="question-box" id="questionBox"></div>
+        <div class="navigation-buttons">
+          <button onclick="prevQuestion()">Previous</button>
+          <button onclick="nextQuestion()">Next</button>
+        </div>
+      </div>
+      <div id="summary" class="summary" style="display:none;">
+        <h2>Finish Attempt</h2>
+        <div id="summaryContent"></div>
+        <button onclick="backToAttempt()">Back to Attempt</button>
+        <button onclick="confirmSubmit()">Submit</button>
+      </div>
+      <div id="review" class="review" style="display:none;">
+        <h2>Score Review</h2>
+        <div id="reviewContent"></div>
+        <button onclick="location.reload()">Restart</button>
+      </div>
+      <div id="adminUpload" class="admin-upload" style="display:none;">
+        <h2>Admin Panel</h2>
+        <input type="file" id="fileInput"><br>
+        <button onclick="uploadQuestions()">Upload Questions</button>
+        <hr>
+        <h3>Add Student Account</h3>
+        <select id="newStudentDept">
+          <option value="">Select Department</option>
+          <option value="CSE">CSE</option>
+          <option value="Management">Management</option>
+          <option value="Accounting">Accounting</option>
+          <option value="Economics">Economics</option>
+        </select>
+        <input type="text" id="newStudentUser" placeholder="Student Username">
+        <input type="password" id="newStudentPass" placeholder="Student Password">
+        <button onclick="addStudent()">Add Student</button>
+      </div>
+    </div>
+    <div class="right-panel" id="rightPanel">
+      <h4>Question Navigation</h4>
+      <div id="questionNav" class="question-nav"></div>
+      <button onclick="showSummary()">Finish Attempt</button>
+    </div>
+  </div>
+<script>
+let allQuestions = {
+  CSE: {
+    v1: [
+      { q: "What is HTML?", options: ["Programming", "Markup", "Database", "Protocol"], answer: 1 },
+      { q: "2+2?", options: ["3", "4", "5", "6"], answer: 1 }
+    ],
+    
+    v2: [
+      { q: "What is HTML v2?", options: ["Programming", "Markup", "Database", "Protocol"], answer: 1 },
+      { q: "2+2?", options: ["3", "4", "5", "6"], answer: 1 }
+    ]
+  },
+Management: {
+    v1: [
+    ],
+    v2: []
+},
+   Accounting: {
+    v1: [
+      { q: "What is the primary purpose of financial accounting?", options: ["To track inventory", "To determine profitability", "To calculate taxes", "To provide financial information for decision-making"], answer: 3 },
+      { q: "Which of the following is an example of a current liability?", options: ["Accounts payable", "Land", "Equipment", "Long-term debt"], answer: 0 },
+      { q: "The matching principle in accounting requires that expenses be matched with:", options: ["Assets", "Liabilities", "Revenues", "Equity"], answer: 2 },
+      { q: "Which of the following is considered an operating activity in a cash flow statement?", options: ["Issuing common stock", "Purchasing property", "Selling products", "Borrowing money"], answer: 2 },
+      { q: "Which financial statement reports a company's financial position at a specific point in time?", options: ["Income Statement", "Cash Flow Statement", "Balance Sheet", "Statement of Retained Earnings"], answer: 2 },
+      { q: "Depreciation is an example of a(n):", options: ["Revenue", "Expense", "Asset", "Liability"], answer: 1 },
+      { q: "Which of the following accounts will not be affected by an adjusting entry for unearned revenue?", options: ["Cash", "Revenue", "Unearned Revenue", "Accounts Receivable"], answer: 3 },
+      { q: "A company has total assets of $500,000 and total liabilities of $300,000. What is the equity?", options: ["$100,000", "$200,000", "$300,000", "$500,000"], answer: 1 },
+      { q: "Which of the following is not part of the owners' equity section of the balance sheet?", options: ["Common stock", "Retained earnings", "Accounts payable", "Additional paid-in capital"], answer: 2 },
+      { q: "Which of the following is an example of a non-current asset?", options: ["Cash", "Accounts receivable", "Goodwill", "Inventory"], answer: 2 },
+      { q: "Which of the following is an example of an accrual?", options: ["Prepaid expenses", "Interest payable", "Unearned revenue", "Advances from customers"], answer: 1 },
+      { q: "In a journal entry, a credit entry to an account increases the balance of a(n):", options: ["Asset", "Liability", "Equity", "Expense"], answer: 1 },
+      { q: "What is the purpose of the trial balance?", options: ["To check whether the accounts are in balance", "To prepare the income statement", "To determine tax obligations", "To prepare the balance sheet"], answer: 0 },
+      { q: "Which of the following accounts normally has a credit balance?", options: ["Accounts payable", "Accounts receivable", "Inventory", "Cash"], answer: 0 }
+    ],
+    v2: [
+      { q: "Which of the following is a liability?", options: ["Accounts payable", "Inventory", "Land", "Common stock"], answer: 0 },
+      { q: "What is the purpose of the statement of cash flows?", options: ["To show the company's profitability", "To show the company's financial position", "To show the sources and uses of cash", "To determine taxes owed"], answer: 2 },
+      { q: "Which of the following is an example of an operating activity in the cash flow statement?", options: ["Issuing bonds", "Paying salaries", "Selling equipment", "Buying stock"], answer: 1 },
+      { q: "What does the revenue recognition principle state?", options: ["Revenue should be recognized when cash is received", "Revenue should be recognized when the product is sold or service is performed", "Revenue should be recognized at the end of the fiscal year", "Revenue should be recognized when payment is made"], answer: 1 },
+      { q: "Which of the following would be classified as a long-term asset?", options: ["Accounts payable", "Equipment", "Inventory", "Cash equivalents"], answer: 1 },
+      { q: "Which account appears on both the balance sheet and the income statement?", options: ["Accounts payable", "Cash", "Sales revenue", "Retained earnings"], answer: 3 },
+      { q: "The principle of conservatism in accounting suggests that:", options: ["Revenues should be recognized when earned", "Liabilities should not be understated", "Assets should be valued at their market value", "Expenses should not be understated"], answer: 1 },
+      { q: "Which of the following is not an example of an intangible asset?", options: ["Patent", "Goodwill", "Trademark", "Land"], answer: 3 },
+      { q: "What does the cost principle state?", options: ["Assets should be recorded at their market value", "Assets should be recorded at their historical cost", "Assets should be recorded at their replacement cost", "Assets should be recorded at their fair value"], answer: 1 },
+      { q: "Which of the following is a characteristic of the accounting period concept?", options: ["The company must recognize revenue only in the period in which it was earned", "The financial statements should reflect transactions that span the fiscal year", "The company must recognize revenue only after cash is received", "The company can choose any period for reporting"], answer: 0 },
+      { q: "What is the main difference between a corporation and a partnership?", options: ["A corporation has unlimited liability, while a partnership has limited liability", "A partnership is taxed at a higher rate than a corporation", "A corporation is a separate legal entity, while a partnership is not", "A partnership has more shareholders than a corporation"], answer: 2 },
+      { q: "In which order are financial statements typically prepared?", options: ["Balance sheet, income statement, cash flow statement", "Income statement, cash flow statement, balance sheet", "Cash flow statement, balance sheet, income statement", "Income statement, balance sheet, cash flow statement"], answer: 3 },
+      { q: "Which of the following is an example of an asset?", options: ["Accounts payable", "Accounts receivable", "Common stock", "Retained earnings"], answer: 1 },
+      { q: "Which of the following represents an increase in stockholders' equity?", options: ["Paying dividends", "Issuing common stock", "Recording depreciation", "Paying off a loan"], answer: 1 }
+    ],
+     v3: [
+      { q: "Which financial statement shows assets, liabilities and equity?", options: ["Income Statement", "Balance Sheet", "Cash Flow Statement", "Statement of Retained Earnings"], answer: 1 },
+
+{ q: "Accrual accounting records revenue when:", options: ["Cash is received", "Goods/services are delivered", "Invoice is sent", "Contract is signed"], answer: 1},
+
+{ q: "Depreciation is:", options: ["0) A cash expense", "Allocation of asset cost", "An increase in asset value", "Only for tax purposes"], answer: 1},
+
+{ q: "The matching principle requires:", options: ["Recording expenses when paid", "Matching expenses to revenues", "Using cash accounting", "Ignoring small expenses"],  answer: 1},
+
+{ q: "FIFO inventory method assumes:", options: ["Newest items sold first", "Oldest items sold first", "Average cost of items", "Specific identification"],  answer: 1},
+
+{ q: "A contingent liability is recorded when:", options: ["Possible and estimable", "Probable and estimable", "Remote", "Always disclosed"],  answer: 1},
+
+{ q: "Goodwill arises from:", options: ["High profits", "Acquisition premium", "Asset appreciation", "Stock issuance"],  answer: 1},
+
+{ q: "The equity method applies to:", options: ["All investments", "20-50% ownership", "Controlling interests", "Trading securities"],  answer: 1},
+
+{ q: "Bonds issued at discount:", options: ["Increase interest expense", "Decrease interest expense", "No effect on interest", "Only affect balance sheet"],  answer: 0},
+
+{ q: "Direct cash flow method shows:", options: ["Net income adjustments", "Gross cash receipts/payments", "Only financing activities", "Non-GAAP reporting"],  answer: 1},
+
+{ q: "Retained earnings represent:", options: ["Current year profit only", "Cumulative undistributed profits", "Shareholder contributions", "Tax reserves"],  answer: 1},
+
+{ q: "GAAP requires inventory valuation at:", options: ["Highest of cost or market", "Lower of cost or market", "Replacement cost", "Selling price"],  answer: 1},
+
+{ q: "Deferred revenue is:", options: ["An expense", "A liability", "An asset", "Equity"],  answer: 1},
+
+{ q: "Treasury stock is:", options: ["An asset", "Contra-equity", "A liability", "Retained earnings"],  answer: 1},
+
+{ q: "EPS calculation includes:", options: ["All outstanding shares", "Weighted average shares", "Only common shares", "Treasury shares"], answer: 1},
+
+{ q: "Operating lease payments are:", options: ["Capitalized", "Expensed as incurred", "Part equity", "Only in footnotes"], answer: 1},
+
+{ q: "Allowance for doubtful accounts is:", options: ["An expense", "Contra-asset", "A liability", "Revenue"], answer: 1},
+
+{ q: "A capital expenditure is:", options: ["An operating expense", "Added to asset account", "Always tax deductible", "Part of COGS"], answer: 1},
+
+{ q: "Consolidated financial statements combine:", options: ["All related companies", "Parent and subsidiaries", "Only profitable entities", "Domestic operations only"], answer: 1},
+
+{ q: "Current ratio formula is:", options: ["Current assets/Total liabilities", "Current assets/Current liabilities", "Quick assets/Current liabilities", "Cash/Current liabilities"], answer: 1},
+
+{ q: "Revenue recognition principle states:", options: ["Record when cash received", "Record when earned", "Record when contract signed", "Record at year-end"], answer: 1},
+
+{ q: "An accrued expense is:", options: ["Paid in advance", "Incurred but not paid", "Always a liability", "Non-deductible"], answer: 1},
+
+{ q: "Stock dividends affect:", options: ["Total equity", "Retained earnings", "Par value", "All shareholders equally"], answer: 1},
+
+{ q: "Gross profit equals:", options: ["Revenue - operating expenses", "Revenue - COGS", "Net income - taxes", "EBIT - interest"], answer: 1},
+
+{ q: "The accounting equation is:", options: ["Assets = Liabilities", "Assets = Liabilities + Equity", "Revenue - Expenses = Profit", "Debits = Credits"], answer: 1},
+
+{ q: "LIFO reserve represents:", options: ["Inventory obsolescence", "Difference between LIFO and FIFO", "Tax savings", "Storage costs"], answer: 1},
+
+{ q: "A promissory note is recorded as:", options: ["Account payable", "Note payable", "Accrued expense", "Deferred revenue"], answer: 1},
+
+{ q: "Unearned revenue is classified as:", options: ["Asset", "Liability", "Equity", "Revenue"], answer: 1},
+
+{ q: "Impairment loss occurs when:", options: ["Asset value increases", "Book value > recoverable amount", "Asset is sold", "Depreciation is recorded"], answer: 1},
+
+{ q: "The closing process transfers:", options: ["Assets to liabilities", "Temporary to permanent accounts", "Revenue to equity", "Expenses to assets"], answer: 1},
+
+{ q: "A contra account:", options: ["Increases the main account", "Offsets the main ", "Is always a liability", "Doesn't appear on statements"], answer: 1},
+
+{ q: "Straight-line depreciation:", options: ["Accelerates expense", "Equal expense each period", "Matches usage", "Is only for tax purposes"], answer: 1},
+
+{ q: "The post-closing trial balance includes:All accounts", options: ["Permanent accounts only", "Temporary accounts only", "Only balance sheet accounts"], answer: 1},
+
+{ q: "A NSF check should be:", options: ["Added back to cash", "Deducted from cash", "Ignored", "Treated as revenue"], answer: 1},
+
+{ q: "Preferred stock dividends are:", options: ["Never paid", "Paid before common dividends", "Paid after common dividends", "Tax deductible"], answer: 1},
+
+{ q: "The cost principle states assets should be recorded at:", options: ["Market value", "Historical cost", "Replacement cost", "Selling price"], answer: 1},
+
+{ q: "An adjusting entry for prepaid insurance:", options: ["Debits insurance expense", "Credits prepaid insurance", "Both A and B", "None"], answer: 2},
+
+{ q: "The Sarbanes-Oxley Act established standards for", options: ["Tax reporting", "Internal controls", "Inventory valuation", "Revenue recognition"], answer: 1},
+
+{ q: "A bank reconciliation adjusts for:", options: ["Only deposits in transit", "Outstanding checks and deposits", "Future transactions", "Shareholder equity"], answer: 1},
+
+{ q: "The statement of cash flows has three sections:", options: ["Assets, liabilities, equity", "Operating, investing, financing", "Revenue, expenses, profit", "Current, long-term, contingent"], answer: 1},
+
+{ q: "Fixed costs per unit:", options: ["Increase with production", "Decrease with production", "Stay ", "Are always variable"], answer: 1},
+
+{ q: "Contribution margin is:", options: ["Revenue - fixed costs", "Revenue - variable costs", "Gross profit", "Net income"], answer: 1},
+
+{ q: "ABC costing allocates overhead based on:", options: ["Direct labor only", "Multiple cost drivers", "Machine hours only", "Sales volume"], answer: 1},
+
+{ q: "A sunk cost is:", options: ["Relevant for decisions", "Irrelevant for decisions", "Always fixed", "An opportunity cost"], answer: 1},
+
+{ q: "Break-even point occurs when:", options: ["Revenue = variable costs", "Revenue = total costs", "Profit is maximized", "Fixed costs = zero"], answer: 1},
+
+{ q: "Variable costing includes:", options: ["Only direct materials", "Only variable manufacturing costs", "All manufacturing costs", "All period costs"], answer: 1},
+
+{ q: "The master budget includes:", options: ["Only cash flows", "Operating and financial budgets", "Only income statement", "Past performance only"], answer: 1},
+
+{ q: "A favorable variance means:", options: ["Actual > standard", "Actual < standard", "No difference", "Budget was wrong"], answer: 1},
+
+{ q: "Product costs include:", options: ["Only direct materials", "DM, DL, and manufacturing overhead", "All period costs", "Only variable costs"], answer: 1},
+
+{ q: "Relevant costs for decision making are:", options: ["All historical costs", "Future costs that differ", "Fixed costs only", "Sunk costs"], answer: 1},
+
+{ q: "The high-low method estimates:", options: ["Only fixed costs", "Fixed and variable costs", "Product costs", "Overhead rates"], answer: 1},
+
+{ q: "Throughput costing includes:", options: ["All manufacturing costs", "Only direct materials", "Variable costs only", "Period costs"], answer: 1},
+
+{ q: "Return on investment (ROI) formula is:", options: ["Profit/Assets", "Profit/Investment", "Revenue/Costs", "Assets/Liabilities"], answer: 1},
+
+{ q: "A flexible budget:", options: ["Never changes", "Adjusts for actual activity", "Is only for cash", "Ignores variances"], answer: 1},
+
+{ q: "Joint costs are allocated to:", options: ["Only main products", "Joint products", "By-products only", "Period costs"], answer: 1},
+
+{ q: "Standard costs are:", options: ["Actual costs", "Predetermined targets", "Minimum costs", "Maximum costs"], answer: 1},
+
+{ q: "The cash budget includes:", options: ["Only sales", "All cash inflows/outflows", "Non-cash items", "Only expenses"], answer: 1},
+
+{ q: "Residual income measures:", options: ["Gross profit", "Profit after capital charge", "Contribution margin", "Break-even point"], answer: 1},
+
+{ q: "Cost-volume-profit analysis assumes:", options: ["All costs are ", "Linear relationships", "No inventory changes", "Constant sales mix"], answer: 1},
+
+{ q: "Activity-based management focuses on:", options: ["Only cost reduction", "Value-added activities", "Only financial reporting", "Tax minimization"], answer: 1},
+
+{ q: "The payback period measures:", options: ["Profitability", "Time to recover investment", "Net present value", "Accounting rate of return"], answer: 1},
+
+{ q: "A cost center is responsible for:", options: ["Revenue and costs", "Costs only", "Investments", "Profit"], answer: 1},
+
+{ q: "Transfer pricing is used for:", options: ["External sales only", "Internal transactions", "Tax reporting", "Inventory valuation"], answer: 1},
+
+{ q: "The balanced scorecard includes:", options: ["Only financial measures", "Financial, customer, internal, learning", "Only non-financial measures", "Only past performance"], answer: 1},
+
+{ q: "Life-cycle costing considers:", options: ["Only production costs", "All costs from design to disposal", "Only variable costs", "Only period costs"], answer: 1},
+
+{ q: "The primary purpose of an audit is to:", options: ["Prepare financial statements", "Detect all fraud", "Provide reasonable assurance on financial statements", "Reduce corporate taxes"], answer: 2},
+
+{ q: "A material misstatement is one that could:", options: ["Affect user decisions", "Only impact internal reporting", "Be ignored if immaterial", "Never occur in accrual accounting"], answer: 0},
+
+{ q: "Inherent risk refers to:", options: ["Risk from control failures", "Risk due to fraud", "Risk before considering controls", "Risk of auditor error"], answer: 2},
+
+{ q: "An unqualified audit opinion means:", options: ["Financial statements are fraudulent", "No material misstatements found", "Significant scope limitations exist", "Only partial verification was possible"], answer: 1},
+
+{ q: "Sampling in auditing is used to:", options: ["Examine 100% of transactions", "Test a representative subset", "Only verify cash balances", "Replace internal controls"], answer: 1},
+
+{ q: "Control risk relates to:", options: ["Fraudulent management override", "Failures in internal controls", "Market fluctuations", "Accounting estimate errors"], answer: 1},
+
+{ q: "Audit documentation serves to:", options: ["Replace financial statements", "Provide evidence of work performed", "Only assist tax authorities", "Reduce audit fees"], answer: 1},
+
+{ q: "A going concern issue suggests:", options: ["High profitability", "Potential bankruptcy risk", "Tax evasion", "Fraudulent activity"], answer: 1},
+
+{ q: "The audit risk model includes:", options: ["Only inherent risk", "Inherent, control, and detection risk", "Market and credit risk", "Sampling risk only"], answer: 1},
+
+{ q: "Substantive procedures are designed to:", options: ["Test internal controls", "Detect material misstatements", "Only verify cash", "Replace risk assessment"], answer: 1},
+
+{ q: "An auditor's independence is critical because:", options: ["It reduces audit costs", "Ensures objectivity", "Guarantees fraud detection", "Eliminates sampling risk"], answer: 1},
+
+{ q: "The Sarbanes-Oxley Act requires:", options: ["Only external audits", "Management assessment of internal controls", "Elimination of audit committees", "Quarterly tax filings"], answer: 1},
+
+{ q: "A qualified audit opinion indicates:", options: ["No issues found", "Material but localized misstatements", "Fraud confirmed", "Complete non-compliance"], answer: 1},
+
+{ q: "Analytical procedures are used to:", options: ["Replace detailed testing", "Identify unusual fluctuations", "Only verify inventory", "Test 100% of transactions"], answer: 1},
+
+{ q: "Detection risk is controlled by:", options: ["Management", "The auditor's procedures", "Tax authorities", "Internal controls only"], answer: 1},
+
+{ q: "A progressive tax system means:", options: ["Higher incomes pay a lower rate", "Higher incomes pay a higher rate", "Everyone pays the same rate", "Only businesses pay taxes"], answer: 1},
+
+{ q: "Taxable income is calculated as:", options: ["Gross income – Deductions – Credits", "Gross income – Adjustments – Deductions", "Net income + Depreciation", "Revenue – COGS"], answer: 1},
+
+{ q: "A tax credit differs from a deduction because it:", options: ["Reduces taxable income", "Directly reduces tax liability", "Only applies to businesses", "Is always refundable"], answer: 1},
+
+{ q: "Depreciation for tax purposes often uses:", options: ["Straight-line only", "MACRS (accelerated method)", "Units-of-production", "No depreciation allowed"], answer: 1},
+
+{ q: "The alternative minimum tax (AMT) is designed to:", options: ["Replace all taxes", "Ensure high-income taxpayers pay minimum tax", "Simplify tax filing", "Only apply to corporations"], answer: 1},
+
+{ q: "A capital gain is taxed differently if it is:", options: ["Short-term (held <1 year)", "Long-term (held >1 year)", "From inventory sales", "Reinvested"], answer: 1},
+
+{ q: "FICA taxes fund:", options: ["Military spending", "Social Security and Medicare", "State programs only", "Corporate subsidies"], answer: 1},
+
+{ q: "A tax shelter is:", options: ["Always illegal", "A legal way to reduce taxes", "Only for individuals", "The same as tax evasion"], answer: 1},
+
+{ q: "Form 1040 is used for:", options: ["Corporate taxes", "Individual income taxes", "ayroll taxes", "Sales taxes"], answer: 1},
+
+{ q: "The estate tax applies to:", options: ["All inheritances", "Large estates above an exemption", "Only business assets", "Gifts during one's lifetime"], answer: 1},
+
+{ q: "Working capital is calculated as:", options: ["Total Assets – Total Liabilities", "Current Assets – Current Liabilities", "Equity – Debt", "Cash + Accounts Receivable"], answer: 1},
+
+{ q: "The time value of money implies:", options: ["Money today is worth less than in the future", "Money today is worth more than in the future", "Inflation has no effect", "Interest rates are irrelevant"], answer: 1},
+
+{ q: "Net Present Value (NPV) measures:", options: ["Accounting profit", "Present value of future cash flows minus investment", "Payback period", "Internal rate of return"], answer: 1},
+
+{ q: "A higher debt-to-equity ratio indicates:", options: ["Lower financial risk", "Higher financial leverage", "No debt", "Excessive cash holdings"], answer: 1},
+
+{ q: "The cost of capital is:", options: ["Only the interest on debt", "Weighted average of debt and equity costs", "Always less than 5%", "The same as profit margin"], answer: 1},
+
+{ q: "Dividend policy affects:", options: ["Only shareholders", "Shareholder value and company growth", "Only bondholders", "Tax liabilities only"], answer: 1},
+
+{ q: "The cash conversion cycle measures:", options: ["Only inventory turnover", "Time to convert inventory to cash", "Dividend payout speed", "Tax payment timing"], answer: 1},
+
+{ q: "Hedging is used to:", options: ["Increase risk", "Reduce financial risk", "Avoid all taxes", "Replace insurance"], answer: 1},
+
+{ q: "The DuPont formula breaks down ROE into:", options: ["Only profit margin", "Profit margin × Asset turnover × Equity multiplier", "Revenue and expenses", "Cash flow components"], answer: 1},
+
+{ q: "Capital budgeting evaluates:", options: ["Daily operations", "Long-term investment projects", "Only short-term loans", "Tax filings"], answer: 1}
+     ]     
+  },
+  Economic: {
+    v1:[
+          { q: "The law of demand states that:", options: [ "Price and quantity demanded are unrelated", "Price and quantity demanded move inversely",        "Price and quantity demanded move together",        "Demand is always elastic"      ],      answer: 1    },
+    { q: "A price ceiling set below equilibrium price leads to:", options: [ "Surplus", "Shortage", "No change in market outcome",        "Increased supply"      ],      answer: 1    },
+    { q: "Marginal utility refers to:", options: [ "Total satisfaction from consumption", "Additional satisfaction from consuming one more unit",        "Average satisfaction per unit consumed",        "The utility of marginal consumers"      ],      answer: 1    },
+    { q: "Perfect competition is characterized by:", options: [ "A single dominant firm", "Many buyers and sellers with identical products", "High barriers to entry", "Firms being price makers" ],      answer: 1    },
+    { q: "The income effect describes how:", options: [ "Demand changes when prices rise", "Purchasing power changes affect quantity demanded", "Only luxury goods are affected by income changes", "Supply curves shift with income changes" ], answer: 1 },
+    { q: "Price elasticity of demand greater than 1 indicates:", options: [ "Inelastic demand", "Elastic demand", "Unitary elastic demand", "Perfectly inelastic demand" ], answer: 1 },
+    { q: "A profit-maximizing monopoly produces where:", options: [ "MR = MC", "MR > MC", "MR < MC", "P = ATC" ], answer: 0 },
+    { q: "Public goods are:", options: [ "Excludable and rival", "Non-excludable and non-rival", "Only provided by private firms", "Always free of charge" ], answer: 1 },
+    { q: "Opportunity cost is best defined as:", options: [ "The monetary price of a good", "The value of the next best alternative foregone", "The cost of production", "A sunk cost" ], answer: 1    },
+    { q: "Producer surplus is the area:", options: [ "Below demand curve and above price", "Above supply curve and below price", "Between average and marginal cost curves", "Equal to total revenue minus fixed costs" ], answer: 1 },
+    { q: "Cross-price elasticity is positive for:", options: [ "Complementary goods", "Substitute goods", "Inferior goods", "Unrelated goods" ], answer: 1 },
+    { q: "A binding price floor results in:", options: [ "Shortage", "Surplus", "No effect on quantity traded", "Increased demand" ], answer: 1 },
+    { q: "The law of diminishing returns states that:", options: [ "Output always increases with additional inputs", "Adding more variable inputs eventually yields smaller output increases", "All production costs are fixed in the long run", "Technology eliminates scarcity" ], answer: 1 },
+    { q: "Oligopoly markets are characterized by:", options: [ "Many small firms", "Few interdependent firms", "No barriers to entry", "Perfect information" ], answer: 1 },
+    { q: "Negative externalities lead to:", options: [ "Overproduction relative to social optimum", "Underproduction relative to social optimum", "Efficient market outcomes", "No social costs" ], answer: 0 },
+    { q: "GDP measures:", options: [ "Only government spending", "Market value of final goods/services produced", "Net worth of households", "Stock market performance" ], answer: 1 },
+    { q: "Inflation can be caused by:", options: [ "Falling aggregate demand", "Rising aggregate demand or supply shocks", "Fixed money supply", "Decreased consumer spending" ], answer: 1 },
+    { q: "The Phillips Curve illustrates the relationship between:", options: [ "GDP and interest rates", "Inflation and unemployment", "Imports and exports", "Savings and investment" ], answer: 1 },
+    { q: "Fiscal policy refers to:", options: [ "Central bank actions", "Government spending and taxation", "Foreign exchange controls", "Trade agreements" ], answer: 1 },
+    { q: "The multiplier effect means that:", options: [ "Taxes reduce GDP proportionally", "Initial spending increases GDP by more than its amount", "Imports exactly offset exports", "Savings always equal investment" ], answer: 1 },
+    { q: "Comparative advantage occurs when a country:",      options: [ "Produces all goods more efficiently", "Produces a good at lower opportunity cost", "Has absolute advantage in all goods", "Imposes high tariffs" ], answer: 1 },
+    { q: "A tariff is a:", options: [ "Subsidy for exporters", "Tax on imports", "Free trade agreement", "Currency control" ], answer: 1 },
+    { q: "The Human Development Index (HDI) includes:", options: [ "Only GDP per capita", "Life expectancy, education, and income", "Military spending", "Trade balances" ], answer: 1 },
+    { q: "R² in regression analysis measures:", options: [ "Statistical significance", "Goodness of fit", "Correlation causation", "Standard error" ], answer: 1 },
+    { q: "The Lorenz Curve is used to measure:", options: [ "GDP growth", "Income inequality", "Inflation rates", "Unemployment" ], answer: 1 },
+    { q: "The natural rate of unemployment includes:", options: [ "Only cyclical unemployment", "Frictional and structural unemployment", "Only seasonal unemployment", "Zero unemployment" ], answer: 1 },
+    { q: "The money supply (M1) includes:", options: [ "Only coins and paper money", "Cash plus demand deposits", "Only savings accounts", "Gold reserves" ], answer: 1 },
+    { q: "The crowding-out effect refers to:", options: [ "Government spending increasing private investment", "Government borrowing reducing private investment", "Imports replacing domestic production", "Tax cuts increasing savings" ], answer: 1 },
+    { q: "The balance of payments must always:", options: [ "Show a surplus", "Balance to zero", "Favor the current account", "Ignore capital flows" ], answer: 1    },
+    { q: "Stagflation refers to:", options: [ "High inflation with high growth", "High inflation with high unemployment", "Deflation with recession", "Stable prices with full employment" ], answer: 1 },
+    { q: "The Taylor Rule guides:", options: [ "Fiscal policy", "Monetary policy interest rates", "Trade policy", "Minimum wage setting" ], answer: 1 },
+    { q: "The J-curve effect describes:", options: [ "Immediate trade balance improvement", "Short-term trade balance worsening before improvement", "Only capital flows", "Inflation dynamics" ], answer: 1 },
+    { q: "The Laffer Curve illustrates the relationship between:", options: [ "Inflation and unemployment", "Tax rates and tax revenue", "Interest rates and investment", "GDP and happiness" ], answer: 1 },
+    { q: "The impossible trinity states that a country cannot have:", options: [ "High growth, low inflation, low unemployment", "Fixed exchange rates, free capital flows, and independent monetary policy", "Balanced budgets, trade surpluses, and full employment", "High savings, high investment, and high exports" ], answer: 1 },
+    { q: "The Solow growth model emphasizes:", options: [ "Short-term business cycles", "Long-term growth via capital, labor, and technology", "Only government spending", "Stock market fluctuations" ], answer: 1 },
+    { q: "The misery index combines:", options: [ "GDP and inflation", "Inflation and unemployment rates", "Interest and exchange rates", "Taxes and savings rates" ], answer: 1 },
+    { q: "The resource curse refers to:", options: [ "Natural resources guaranteeing growth", "Natural resources hindering development due to governance issues", "Lack of natural resources", "Only affecting industrialized nations" ], answer: 1 },
+    { q: "The Washington Consensus promoted:", options: [ "Central planning", "Market-oriented reforms", "High tariffs", "Economic isolationism" ], answer: 1 },
+    { q: "A Type I error in hypothesis testing occurs when:", options: ["A true null hypothesis is accepted", "A true null hypothesis is rejected", "The sample size is too small", "The effect size is large"], answer: 1}
+    ]
+  }
+};
+let studentAccounts = {
+  CSE: [{ username: "demo", password: "1234" }], Management: [{ username: "demo", password: "1234" }], Accounting: [ {username: "demo", password: "1234" }], Economics: [{ username: "demo", password: "1234" }]
+};
+let questions = [], current = 0, userAnswers = [], flagged = [], timer, department = "";
+
+function login() {
+  department = document.getElementById('department').value;
+  let version = document.getElementById('questionVersion').value;
+  let u = document.getElementById('username').value;
+  let p = document.getElementById('password').value;
+
+  if (u === "admin" && p === "admin123") {
+    show('adminUpload');
+    document.getElementById('leftPanel').style.display = 'none';
+    document.getElementById('rightPanel').style.display = 'none';
+    return;
+  }
+
+  let valid = studentAccounts[department]?.some(acc => acc.username === u && acc.password === p);
+  if (valid && allQuestions[department] && allQuestions[department][version]) {
+    questions = allQuestions[department][version];
+    userAnswers = Array(questions.length).fill(null);
+    flagged = Array(questions.length).fill(false);
+    show('quiz');
+    document.getElementById('leftPanel').style.display = 'block';
+    document.getElementById('rightPanel').style.display = 'block';
+    startTimer(30 * 60);
+    renderQuestion();
+    renderNav();
+  } else {
+    alert('Invalid credentials or question set not found.');
+  }
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  let html = `<h3>Q${current+1}</h3><p>${q.q}</p>`;
+  q.options.forEach((opt, i) => {
+    html += `<label border=1;><input type='radio' name='q' value='${i}' ${userAnswers[current] === i ? 'checked' : ''} onchange='submitAnswer(${i})'> ${opt}</label><br>`;
+  });
+  document.getElementById('questionBox').innerHTML = html;
+  renderNav();
+}
+
+function nextQuestion() { if (current < questions.length - 1) { current++; renderQuestion(); } }
+function prevQuestion() { if (current > 0) { current--; renderQuestion(); } }
+function submitAnswer(val) { userAnswers[current] = val; renderNav(); }
+
+function toggleFlag() { flagged[current] = !flagged[current]; renderNav(); }
+
+function renderNav() {
+  let html = '';
+  for (let i = 0; i < questions.length; i++) {
+    let cls = '';
+    if (userAnswers[i] != null) cls += 'answered ';
+    if (flagged[i]) cls += 'flagged';
+    html += `<span class='${cls}' onclick='goTo(${i})'>${i + 1}</span>`;
+  }
+  document.getElementById('questionNav').innerHTML = html;
+}
+
+function goTo(i) { current = i; renderQuestion(); }
+function showSummary() {
+  show('summary');
+  let html = '';
+  questions.forEach((q, i) => {
+    html += `<p>Q${i+1}: ${userAnswers[i]!=null?'✅ Answer Seved':'❌ Answer Not Saved'} ${flagged[i]?'🚩':''}</p>`;
+  });
+  document.getElementById('summaryContent').innerHTML = html;
+}
+function backToAttempt() { show('quiz'); renderQuestion(); }
+function confirmSubmit() { if (confirm("Are you sure you want to submit?")) finishQuiz(); }
+function finishQuiz() {
+  show('review');
+  let score = 0, html = '';
+  questions.forEach((q, i) => {
+    let ua = userAnswers[i];
+    let ca = q.answer;
+    if (ua === ca) score++;
+    html += `<div class='answer-review'>Q${i+1}: ${q.q}<br> Your: <span class='${ua === ca ? 'correct' : 'incorrect'}'>${q.options[ua] || 'No answer'}</span><br> Correct: <span class='correct'>${q.options[ca]}</span><br></div><hr>`;
+  });
+  html = `<p>You scored ${score}/${questions.length} (${Math.round(score/questions.length*100)}%)</p>` + html;
+  document.getElementById('reviewContent').innerHTML = html;
+}
+
+function startTimer(secs) {
+  timer = setInterval(() => {
+    if (secs <= 0) { clearInterval(timer); finishQuiz(); }
+    else {
+      let m = Math.floor(secs / 60), s = secs % 60;
+      document.getElementById('time').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+      secs--;
+    }
+  }, 1000);
+}
+
+function uploadQuestions() {
+  let file = document.getElementById('fileInput').files[0];
+  if (!file) return alert("No file selected.");
+  let reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      allQuestions = JSON.parse(e.target.result);
+      alert("Questions uploaded successfully!");
+    } catch {
+      alert("Invalid JSON format.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+function addStudent() {
+  let dept = document.getElementById('newStudentDept').value;
+  let user = document.getElementById('newStudentUser').value;
+  let pass = document.getElementById('newStudentPass').value;
+
+  if (!dept || !user || !pass) {
+    alert("Fill all fields.");
+    return;
+  }
+  if (!studentAccounts[dept]) studentAccounts[dept] = [];
+  if (studentAccounts[dept].some(s => s.username === user)) {
+    alert("Username already exists in that department.");
+    return;
+  }
+  studentAccounts[dept].push({ username: user, password: pass });
+  alert("Student added successfully!");
+  document.getElementById('newStudentUser').value = "";
+  document.getElementById('newStudentPass').value = "";
+}
+
+function show(id) {
+  ['login', 'quiz', 'summary', 'review', 'adminUpload'].forEach(el => {
+    document.getElementById(el).style.display = 'none';
+  });
+  document.getElementById(id).style.display = 'block';
+}
+</script>
+</body>
+</html>
