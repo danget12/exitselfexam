@@ -865,7 +865,10 @@ function login() {
   let version = document.getElementById('questionVersion').value;
   let u = document.getElementById('username').value;
   let p = document.getElementById('password').value;
-
+if (!department || !questionVersion || !Username || !Password) {
+    alert("Please fill in all fields.");
+    return;
+  }
   if (u === "admin" && p === "admin123") {
     show('adminUpload');
     document.getElementById('leftPanel').style.display = 'none';
