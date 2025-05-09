@@ -13,6 +13,23 @@
       padding: 0;
       color: #333;
     }
+    .options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.option-item input {
+  margin: 0;
+}
     .container {
       display: flex;
       max-width: 1200px;
@@ -219,7 +236,7 @@ Management: {
     {      q: "'Integral leadership' incorporates:",      options: [        "Only quantitative measures",        "Multiple perspectives and ways of knowing",        "Eliminating all subjective elements",        "Focusing only on financial outcomes"      ],      answer: 1    },
     {      q: "The 'Four Dimensions of Transformational Leadership' are:",      options: [        "Idealized influence, inspirational motivation, intellectual stimulation, individualized consideration",        "Planning, organizing, leading, controlling",        "Analysis, synthesis, evaluation, application",        "Local, regional, national, global"      ],      answer: 0    },
     {      q: "Complex adaptive leadership views organizations as:",      options: [        "Mechanical systems",        "Living systems that evolve and adapt",        "Static entities",        "Isolated from their environments"      ],      answer: 1    },
-    {      q: "The 'Five Practices of Exemplary Leadership' were identified by:",      options: [        "Kouzes and Posner",        "Porter and Kramer",        "Mintzberg and Waters",        "Drucker and Deming"      ],      answer: 0    }
+    {      q: "The 'Five Practices of Exemplary Leadership' were identified by:",      options: [        "Kouzes and Posner",        "Porter and Kramer",        "Mintzberg and Waters",        "Drucker and Deming"      ],      answer: 0    },
     {      q: "A PESTEL analysis examines:",      options: [        "Political, Economic, Social, Technological, Environmental, Legal factors",        "Product, Efficiency, Service, Technology, Ethics, Logistics",        "Profit, Expenses, Sales, Targets, Earnings, Liabilities",        "Planning, Execution, Strategy, Tactics, Evaluation, Learning"      ],      answer: 0    },
     {      q: "The 80/20 rule (Pareto Principle) suggests that:",      options: [        "80% of results come from 20% of efforts",        "Managers should spend 80% time planning and 20% executing",        "Teams perform best with 80% leaders and 20% followers",        "Budgets should allocate 80% to operations and 20% to R&D"      ],      answer: 0    },
     {      q: "Which decision-making model assumes perfect rationality?",      options: [        "Bounded rationality",        "Garbage can model",        "Classical model",        "Incremental model"      ],      answer: 2    },
@@ -355,7 +372,7 @@ Management: {
     {      q: "Which leadership style emphasizes rule-following and formal procedures?",      options: [        "Charismatic leadership",        "Bureaucratic leadership",        "Servant leadership",        "Transformational leadership"      ],      answer: 1    },
     {      q: "The main advantage of a virtual organization is:",      options: [        "Physical centralization",        "Reduced overhead costs and geographic flexibility",        "Limited technology use",        "Face-to-face only communication"      ],      answer: 1    },
     {      q: "A manager using the Eisenhower Matrix prioritizes tasks based on:",      options: [        "Urgency and importance",        "Cost alone",        "Employee preferences",        "Alphabetical order"      ],      answer: 0    },
-    {      q: "The main purpose of a diversity management program is to:",      options: [        "Eliminate all differences",        "Value and leverage differences for organizational benefit",        "Reduce training",        "Standardize all employee behavior"      ],      answer: 1    }
+    {      q: "The main purpose of a diversity management program is to:",      options: [        "Eliminate all differences",        "Value and leverage differences for organizational benefit",        "Reduce training",        "Standardize all employee behavior"      ],      answer: 1    },
     {      q: "The Vroom-Yetton-Jago decision model helps managers determine:",      options: [        "Optimal pricing strategies",        "Appropriate level of employee participation in decisions",        "Best locations for new facilities",        "Ideal number of employees to hire"      ],      answer: 1    },
     {      q: "In the context of organizational culture, 'artifacts' refer to:",      options: [        "Buried historical objects",        "Visible manifestations of culture (dress code, office layout, etc.)",        "Outdated policies",        "Financial statements"      ],      answer: 1    },
     {      q: "The 'glass ceiling' phenomenon describes:",      options: [        "Transparent office designs",        "Invisible barriers to career advancement for certain groups",        "Skylight installation costs",        "Executive compensation structures"      ],      answer: 1    },
@@ -371,7 +388,7 @@ Management: {
     {      q: "Which of the following best describes 'blue ocean strategy'?",      options: [        "Competing in crowded markets",        "Creating uncontested market space",        "Focusing exclusively on cost leadership",        "Mimicking competitors' strategies"      ],      answer: 1    },
     {      q: "The 'Iron Triangle' of project management refers to:",      options: [        "Scope, Time, Cost",        "Quality, Risk, Resources",        "Team, Tools, Technology",        "Planning, Execution, Control"      ],      answer: 0    },
     {      q: "'Kaizen' refers to:",      options: [        "Large-scale organizational restructuring",        "Continuous incremental improvement",        "Complete process reengineering",        "Annual performance reviews"      ],      answer: 1    },
-    {      q "Which leadership style is most associated with Elon Musk and Steve Jobs?",      options: [        "Bureaucratic leadership",        "Visionary leadership",        "Servant leadership",        "Transactional leadership"      ],      answer: 1    },
+    {      q: "Which leadership style is most associated with Elon Musk and Steve Jobs?",      options: [        "Bureaucratic leadership",        "Visionary leadership",        "Servant leadership",        "Transactional leadership"      ],      answer: 1    },
     {      q: "The 'McKinsey 7S Framework' includes which elements?",      options: [        "Strategy, Structure, Systems, Shared Values, Skills, Style, Staff",        "Sales, Service, Supply, Sustainability, Security, Safety, Savings",        "Stocks, Shares, Savings, Salaries, Systems, Software, Services",        "Standardization, Specialization, Synchronization, Simplification, Safety, Security, Sustainability"      ],      answer: 0    },
     {      q: "In decision theory, 'satisficing' refers to:",      options: [        "Finding the optimal solution",        "Accepting a satisfactory solution rather than an optimal one",        "Maximizing all possible outcomes",        "Eliminating all alternatives"      ],      answer: 1    },
     {      q: "The 'servitization' business model involves:",      options: [        "Adding services to product offerings",        "Eliminating all customer service",        "Automating all human interactions",        "Focusing exclusively on product sales"      ],      answer: 0    },
@@ -434,7 +451,7 @@ Management: {
     {      q: "'Needs theory' in workplace design emphasizes:",      options: [        "Ignoring employee needs",        "Aligning physical space with psychological needs",        "Only considering cost factors",        "Standardizing all workspaces"      ],      answer: 1    },
     {      q: "The 'Three Pillars of Sustainability' are:",      options: [        "Economic, social, environmental",        "Profit, people, products",        "Management, employees, customers",        "Planning, execution, review"      ],      answer: 0    },
     {      q: "'Complexity leadership' focuses on:",      options: [        "Simplifying all organizational processes",        "Emergent processes in knowledge-producing organizations",        "Eliminating all organizational complexity",        "Only top-down decision making"      ],      answer: 1    },
-    {      q; "The 'Four Frames Model' (structural, human resource, political, symbolic) was developed by:",      options: [        "Bolman and Deal",        "Kotter and Cohen",        "Porter and Kramer",        "Mintzberg and Waters"      ],      answer: 0    },
+    {      q: "The 'Four Frames Model' (structural, human resource, political, symbolic) was developed by:",      options: [        "Bolman and Deal",        "Kotter and Cohen",        "Porter and Kramer",        "Mintzberg and Waters"      ],      answer: 0    },
     {      q: "'Intercultural competence' in global business requires:",      options: [        "Ignoring cultural differences",        "Knowledge, skills, and attitudes to work across cultures",        "Imposing one culture on all operations",        "Eliminating all local adaptations"      ],      answer: 1    },
     {      q: "The 'Five Practices of Exemplary Leadership' include:",      options: [        "Model the way, inspire shared vision",        "Plan, organize, staff, direct, control",        "Hire, train, evaluate, promote, fire",        "Analyze, decide, implement, review, reward"      ],      answer: 0    },
     {      q: "'Sustainable leadership' emphasizes:",      options: [        "Short-term profit maximization",        "Long-term value creation for all stakeholders",        "Leadership by sustainability experts only",        "Eliminating all financial considerations"      ],      answer: 1    },
@@ -468,7 +485,7 @@ Management: {
       { q: "Which of the following is an example of an accrual?", options: ["Prepaid expenses", "Interest payable", "Unearned revenue", "Advances from customers"], answer: 1 },
       { q: "In a journal entry, a credit entry to an account increases the balance of a(n):", options: ["Asset", "Liability", "Equity", "Expense"], answer: 1 },
       { q: "What is the purpose of the trial balance?", options: ["To check whether the accounts are in balance", "To prepare the income statement", "To determine tax obligations", "To prepare the balance sheet"], answer: 0 },
-      { q: "Which of the following accounts normally has a credit balance?", options: ["Accounts payable", "Accounts receivable", "Inventory", "Cash"], answer: 0 }
+      { q: "Which of the following accounts normally has a credit balance?", options: ["Accounts payable", "Accounts receivable", "Inventory", "Cash"], answer: 0 },
       { q: "The cash conversion cycle measures:", options: ["Only inventory turnover", "Time to convert inventory to cash", "Dividend payout speed", "Tax payment timing"], answer: 1}
     ],
     v2: [
@@ -485,7 +502,7 @@ Management: {
       { q: "What is the main difference between a corporation and a partnership?", options: ["A corporation has unlimited liability, while a partnership has limited liability", "A partnership is taxed at a higher rate than a corporation", "A corporation is a separate legal entity, while a partnership is not", "A partnership has more shareholders than a corporation"], answer: 2 },
       { q: "In which order are financial statements typically prepared?", options: ["Balance sheet, income statement, cash flow statement", "Income statement, cash flow statement, balance sheet", "Cash flow statement, balance sheet, income statement", "Income statement, balance sheet, cash flow statement"], answer: 3 },
       { q: "Which of the following is an example of an asset?", options: ["Accounts payable", "Accounts receivable", "Common stock", "Retained earnings"], answer: 1 },
-      { q: "Which of the following represents an increase in stockholders' equity?", options: ["Paying dividends", "Issuing common stock", "Recording depreciation", "Paying off a loan"], answer: 1 }
+      { q: "Which of the following represents an increase in stockholders' equity?", options: ["Paying dividends", "Issuing common stock", "Recording depreciation", "Paying off a loan"], answer: 1 },
       { q: "Allowance for doubtful accounts is:", options: ["An expense", "Contra-asset", "A liability", "Revenue"], answer: 1}
     ],
       v3:[
@@ -641,13 +658,13 @@ Management: {
     { q: "The misery index combines:", options: [ "GDP and inflation", "Inflation and unemployment rates", "Interest and exchange rates", "Taxes and savings rates" ], answer: 1 },
     { q: "The resource curse refers to:", options: [ "Natural resources guaranteeing growth", "Natural resources hindering development due to governance issues", "Lack of natural resources", "Only affecting industrialized nations" ], answer: 1 },
     { q: "The Washington Consensus promoted:", options: [ "Central planning", "Market-oriented reforms", "High tariffs", "Economic isolationism" ], answer: 1 },
-    { q: "A Type I error in hypothesis testing occurs when:", options: ["A true null hypothesis is accepted", "A true null hypothesis is rejected", "The sample size is too small", "The effect size is large"], answer: 1}
+    { q: "A Type I error in hypothesis testing occurs when:", options: ["A true null hypothesis is accepted", "A true null hypothesis is rejected", "The sample size is too small", "The effect size is large"], answer: 1},
     { q: "Dumping occurs when a firm sells abroad at:",      options: [        "Higher than domestic prices",        "Lower than domestic prices or below cost",        "The same as domestic prices",        "Prices determined by the WTO"      ],      answer: 1    },
     { q: "Countervailing duties are imposed to offset:",      options: [        "Tariffs",        "Foreign subsidies",        "Exchange rate manipulation",        "Intellectual property violations"      ],      answer: 1    },
     { q: "Safeguard measures are temporary trade restrictions allowed under WTO rules to protect domestic industries from:",      options: [        "Fair trade",        "Sudden import surges",        "All foreign competition",        "Developing countries only"      ],      answer: 1    },
     { q: "The principle of national treatment in the WTO requires that:",      options: [        "Foreign goods be treated worse than domestic goods",        "Foreign goods be treated no worse than domestic goods",        "All goods be treated identically worldwide",        "No imports be allowed"      ],      answer: 1    },
     { q: "The current account balance includes:",      options: [        "Only trade in goods",        "Trade in goods and services, income, and current transfers",        "Only financial flows",        "Only foreign direct investment"      ],      answer: 1    },
-    { q: "The capital account records:",      options: [        "Current income flows",        "Capital transfers and acquisition/disposal of non-produced assets",        "Only foreign direct investment",        "Only portfolio investment"      ],      answer: 1    },
+    { q: "The capital account records:",      options: [        "Current income flows",        "Capital transfers and acquisition/disposal of non-produced assets",        "Only foreign direct investment",        "Only portfolio investment"      ],      answer: 1    }
     ],
       v4:[
     {      q: "The law of demand states that, all else being equal:",      options: [        "Price and quantity demanded are unrelated",        "Price and quantity demanded move inversely",        "Price and quantity demanded move together",        "Demand is always perfectly elastic"      ],      answer: 1    },
@@ -861,43 +878,57 @@ let studentAccounts = {
 let questions = [], current = 0, userAnswers = [], flagged = [], timer, department = "";
 
 function login() {
-  department = document.getElementById('department').value;
-  let version = document.getElementById('questionVersion').value;
-  let u = document.getElementById('username').value;
-  let p = document.getElementById('password').value;
-if (!department || !questionVersion || !Username || !Password) {
+  const dept = document.getElementById('department').value;
+  const version = document.getElementById('questionVersion').value;
+  const user = document.getElementById('username').value;
+  const pass = document.getElementById('password').value;
+
+  if (!dept || !version || !user || !pass) {
     alert("Please fill in all fields.");
     return;
   }
-  if (u === "admin" && p === "admin123") {
-    show('adminUpload');
-    document.getElementById('leftPanel').style.display = 'none';
-    document.getElementById('rightPanel').style.display = 'none';
+
+  if (user === "admin" && pass === "admin123") {
+    show("adminUpload");
     return;
   }
 
-  let valid = studentAccounts[department]?.some(acc => acc.username === u && acc.password === p);
-  if (valid && allQuestions[department] && allQuestions[department][version]) {
-    questions = allQuestions[department][version];
-    userAnswers = Array(questions.length).fill(null);
-    flagged = Array(questions.length).fill(false);
-    show('quiz');
-    document.getElementById('leftPanel').style.display = 'block';
-    document.getElementById('rightPanel').style.display = 'block';
-    startTimer(180 * 60);
-    renderQuestion();
-    renderNav();
-  } else {
-    alert('Invalid credentials or question set not found.');
+  if (user === "demo" && pass === "1234") {
+    if (allQuestions[dept] && allQuestions[dept][version]) {
+      questions = allQuestions[dept][version];
+      userAnswers = Array(questions.length).fill(null);
+      flagged = Array(questions.length).fill(false);
+      show("quiz");
+      startTimer(30 * 60);
+      renderQuestion();
+      renderNav();
+      document.getElementById("leftPanel").style.display = "block";
+      document.getElementById("rightPanel").style.display = "block";
+      return;
+    } else {
+      alert("Question set not found for this department and version.");
+      return;
+    }
   }
+
+  alert("Invalid username or password.");
 }
 
 function renderQuestion() {
   const q = questions[current];
-  let html = `<h3>Q${current+1}</h3><p>${q.q}</p>`;
+  let html = `<h3>Q${current+1}</h3><p>${q.q}</p><div style="display: flex; gap: 20px;">`;
+  
   q.options.forEach((opt, i) => {
-    html += `<label border=1;><input type='radio' name='q' value='${i}' ${userAnswers[current] === i ? 'checked' : ''} onchange='submitAnswer(${i})'> ${opt}</label><br>`;
+    html += `
+      <label style="display: flex; align-items: center; gap: 5px; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px;">
+        <input type='radio' name='q' value='${i}' 
+               ${userAnswers[current] === i ? 'checked' : ''} 
+               onchange='submitAnswer(${i})'>
+        ${opt}
+      </label>`;
   });
+  
+  html += `</div>`;
   document.getElementById('questionBox').innerHTML = html;
   renderNav();
 }
