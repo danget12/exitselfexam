@@ -160,7 +160,7 @@
         <button onclick="login()">Login</button>
       </div>
       <div id="quiz" class="quiz" style="display:none;">
-        <div class="timer">Time left: <span id="time">180:00</span></div>
+        <div class="timer">Time left: <span id="time">00:00</span></div>
         <div class="question-box" id="questionBox"></div>
         <div class="navigation-buttons">
           <button onclick="prevQuestion()">Previous</button>
@@ -1372,7 +1372,7 @@ function login() {
       userAnswers = Array(questions.length).fill(null);
       flagged = Array(questions.length).fill(false);
       show("quiz");
-      startTimer(30 * 60);
+      if(version=='v1' || version=='v2' || version=='v3'){startTimer(30 * 60);}else{startTimer(180 * 60);}
       renderQuestion();
       renderNav();
       document.getElementById("leftPanel").style.display = "block";
