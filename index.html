@@ -1554,6 +1554,9 @@ function login() {
   }
 
   if (user === "demo" && pass === "1234") {
+	   const input = prompt("🔐 Enter Quiz Password: 1212");
+  if (input === null) return; // User cancelled
+  if (input === "1212") {
     if (allQuestions[dept] && allQuestions[dept][version]) {
       questions = allQuestions[dept][version];
       userAnswers = Array(questions.length).fill(null);
@@ -1570,6 +1573,7 @@ function login() {
       alert("Question set not found for this department and version.");
       return;
     }
+  }
   }
 
   alert("Invalid username or password.");
