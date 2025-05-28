@@ -885,8 +885,12 @@ Management: {
 {q: "The decision-making approach (criteria) under complete uncertainty that focuses on the average payoff for each row and selecting the alternative that has the best row average is:", options: ["	Maximax","	Maximin ","	Minimax regret","	Equal likelihood"], answer: 3   },
 {q: "-------- models provide the “best” or “optimal” solution to problems subject to certain limitations on the use of resources.", options: ["	Normative ","	Descriptive","	Predictive","	Physical "], answer: 0   },
 {q: "Which one of the following helps in evaluating the effect of changes on the parameter values of a liner programming problem on the optimal solution?", options: ["	Simplex","	Simulation","	Duality","	Sensitivity"], answer: 3   },
-{q: "Which one of the following is not the component of linear programing model structure?", options: [" Decision variable"," Objective function"," Constraints"," None"], answer: 3   }
-   ]
+{q: "Which one of the following is not the component of linear programing model structure?", options: [" Decision variable"," Objective function"," Constraints"," None"], answer: 3   },
+{q:"Using the below table determine the optimal assignment",img: "pic3.jpg", options: ["X-C, Y-B, Z-A ","	X-B, Y-A, Z-C","	X-C, Y-C, Z-B","	X-C, Y-A, Z-A"], answer: 0},
+{q:"Based on the below table identify the basic variables ",img: "pic2.jpg", options: ["X1, S2, X2  ","	X2, X3, S1","	X2, S3, X1  ","	X1, X2, X3"], answer: 3} ,
+{q:"Based on the below network diagram, which one is the critical path",img: "pic1.jpg", options: ["1-2-5-8-9 ","	1-3-6-8-9 ","	1-3-4-6-8-9 ","	1-2-6-8-9"], answer: 2} 
+
+  ]
 },
    Accounting: {
     v1: [
@@ -1642,7 +1646,9 @@ function renderQuestion() {
   let html = `
     <h3>#${current + 1}</h3> ${q.q}
     <div style="display: flex; flex-direction: column; gap: 12px;">`;
-
+if (q.img) {
+  html += `<img src="${q.img}" alt="Question Image" style="max-width:100%; height:auto;">`;
+}
   q.options.forEach((opt, i) => {
     const isSelected = userAnswers[current] === i;
     html += `
